@@ -1,0 +1,263 @@
+definitions:
+  account.CreateRequest:
+    properties:
+      account:
+        $ref: '#/definitions/model.AccountCreate'
+    type: object
+  account.CreateResponse:
+    properties:
+      error: {}
+      id:
+        type: string
+    type: object
+  account.DeleteResponse:
+    properties:
+      error: {}
+    type: object
+  account.GetAllResponse:
+    properties:
+      accounts:
+        items:
+          $ref: '#/definitions/model.Account'
+        type: array
+      error: {}
+    type: object
+  account.GetByIDResponse:
+    properties:
+      account:
+        $ref: '#/definitions/model.Account'
+      error: {}
+    type: object
+  account.UpdateRequest:
+    properties:
+      account:
+        $ref: '#/definitions/model.AccountUpdate'
+    type: object
+  account.UpdateResponse:
+    properties:
+      error: {}
+    type: object
+  model.Account:
+    properties:
+      account_type:
+        type: string
+      cookie:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      emailPassword:
+        type: string
+      id:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      recovery_email:
+        type: string
+      recovery_email_password:
+        type: string
+      status:
+        type: string
+    type: object
+  model.AccountCreate:
+    properties:
+      account_type:
+        type: string
+      cookie:
+        type: string
+      email:
+        type: string
+      emailPassword:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      recovery_email:
+        type: string
+      recovery_email_password:
+        type: string
+      status:
+        type: string
+    type: object
+  model.AccountUpdate:
+    properties:
+      account_type:
+        type: string
+      cookie:
+        type: string
+      email:
+        type: string
+      emailPassword:
+        type: string
+      login:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      recovery_email:
+        type: string
+      recovery_email_password:
+        type: string
+      status:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /accounts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of accounts
+          schema:
+            $ref: '#/definitions/account.GetAllResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all accounts
+      tags:
+      - accounts
+    post:
+      consumes:
+      - application/json
+      description: Create a new account with the specified details
+      parameters:
+      - description: Account to create
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/account.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.CreateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a new account
+      tags:
+      - accounts
+  /accounts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an account
+      parameters:
+      - description: Account ID to delete
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.DeleteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete an account
+      tags:
+      - accounts
+    get:
+      consumes:
+      - application/json
+      description: Retrieve an account by its unique identifier
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Account data
+          schema:
+            $ref: '#/definitions/account.GetByIDResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get account by ID
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      description: Update an account with specified details
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Account to update
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/account.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated account data
+          schema:
+            $ref: '#/definitions/account.UpdateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update an account
+      tags:
+      - accounts
+swagger: "2.0"

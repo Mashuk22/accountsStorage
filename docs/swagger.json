@@ -1,0 +1,401 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/accounts": {
+            "get": {
+                "description": "Retrieve a list of all accounts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get all accounts",
+                "responses": {
+                    "200": {
+                        "description": "List of accounts",
+                        "schema": {
+                            "$ref": "#/definitions/account.GetAllResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new account with the specified details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Account to create",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/account.CreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/account.CreateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{id}": {
+            "get": {
+                "description": "Retrieve an account by its unique identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Get account by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Account data",
+                        "schema": {
+                            "$ref": "#/definitions/account.GetByIDResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an account with specified details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Update an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Account to update",
+                        "name": "account",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/account.UpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated account data",
+                        "schema": {
+                            "$ref": "#/definitions/account.UpdateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Delete an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/account.DeleteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "account.CreateRequest": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "$ref": "#/definitions/model.AccountCreate"
+                }
+            }
+        },
+        "account.CreateResponse": {
+            "type": "object",
+            "properties": {
+                "error": {},
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "account.DeleteResponse": {
+            "type": "object",
+            "properties": {
+                "error": {}
+            }
+        },
+        "account.GetAllResponse": {
+            "type": "object",
+            "properties": {
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Account"
+                    }
+                },
+                "error": {}
+            }
+        },
+        "account.GetByIDResponse": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "$ref": "#/definitions/model.Account"
+                },
+                "error": {}
+            }
+        },
+        "account.UpdateRequest": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "$ref": "#/definitions/model.AccountUpdate"
+                }
+            }
+        },
+        "account.UpdateResponse": {
+            "type": "object",
+            "properties": {
+                "error": {}
+            }
+        },
+        "model.Account": {
+            "type": "object",
+            "properties": {
+                "account_type": {
+                    "type": "string"
+                },
+                "cookie": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailPassword": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "recovery_email": {
+                    "type": "string"
+                },
+                "recovery_email_password": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AccountCreate": {
+            "type": "object",
+            "properties": {
+                "account_type": {
+                    "type": "string"
+                },
+                "cookie": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailPassword": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "recovery_email": {
+                    "type": "string"
+                },
+                "recovery_email_password": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AccountUpdate": {
+            "type": "object",
+            "properties": {
+                "account_type": {
+                    "type": "string"
+                },
+                "cookie": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "emailPassword": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "recovery_email": {
+                    "type": "string"
+                },
+                "recovery_email_password": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
