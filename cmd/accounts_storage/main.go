@@ -19,7 +19,7 @@ func main() {
 		logger     *logrus.Logger
 	)
 
-	flag.StringVar(&configPath, "config-path", "cmd/accounts_storage/configs/apiserver.toml", "path to the config file")
+	flag.StringVar(&configPath, "config-path", "./cmd/accounts_storage/configs/apiserver.toml", "path to the config file")
 	flag.Parse()
 
 	logger = logrus.New()

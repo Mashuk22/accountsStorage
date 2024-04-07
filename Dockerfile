@@ -17,6 +17,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 COPY --from=builder /app/app .
+COPY --from=builder /app/cmd/accounts_storage/configs/apiserver.toml ./cmd/accounts_storage/configs/apiserver.toml 
 
 EXPOSE 8080
 
