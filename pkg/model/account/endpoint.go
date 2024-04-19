@@ -3,6 +3,7 @@ package account
 import (
 	"account_storage/pkg/model"
 	"context"
+	"log"
 
 	"github.com/go-kit/kit/endpoint"
 )
@@ -67,8 +68,10 @@ func makeDeleteEndpoint(s Service) endpoint.Endpoint {
 
 func makeNginxEndpoint(s Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		log.Print("start makeNginxEndpoint func in endpoint")
+
 		res, err := s.Nginx(ctx)
-		return res, err
+		return NginxResponse{Res: res, Err: err}, err
 	}
 }
 
@@ -91,6 +94,14 @@ type GetByIDResponse struct {
 }
 
 type GetAllRequest struct {
+}
+
+type NginxRequest struct {
+}
+
+type NginxResponse struct {
+	Res string `json:"res"`
+	Err error  `json:"error,omitempty"`
 }
 
 type GetAllResponse struct {

@@ -5,7 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 
@@ -159,33 +159,29 @@ func (accountRepository *AccountRepository) GetAll(ctx context.Context) ([]model
 }
 
 func (accountRepository *AccountRepository) Nginx(ctx context.Context) (string, error) {
-	// Создаем HTTP клиент с таймаутом
 	client := &http.Client{
-		Timeout: 10 * time.Second, // Таймаут можно настроить по необходимости
+		Timeout: 10 * time.Second,
 	}
 
-	// Выполнение HTTP GET запроса
-	req, err := http.NewRequestWithContext(ctx, "GET", "http://nginx", nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://accounts-storage-nginx", nil)
 	if err != nil {
-		return "", err // Возвращаем ошибку, если создание запроса не удалось
+		return "", fmt.Errorf("error http.NewRequestWithContext: %w", err)
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err // Возвращаем ошибку, если запрос не выполнен
+		return "", fmt.Errorf("error client.Do: %w", err)
 	}
-	defer resp.Body.Close() // Убедитесь, что закрываете тело ответа
+	defer resp.Body.Close()
 
-	// Проверка статуса ответа
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("failed to get a successful response: status code %d", resp.StatusCode)
 	}
 
-	// Чтение тела ответа
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err // Возвращаем ошибку, если чтение тела ответа не удалось
+		return "", fmt.Errorf("error reading response body: %w", err)
 	}
 
-	return string(body), nil // Возвращаем тело ответа как строку
+	return string(body), nil
 }

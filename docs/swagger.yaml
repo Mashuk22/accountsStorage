@@ -260,4 +260,28 @@ paths:
       summary: Update an account
       tags:
       - accounts
+  /nginx:
+    get:
+      consumes:
+      - application/json
+      description: Makes an HTTP GET request to Nginx and returns the response body
+        as a string.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Response body from Nginx
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get data from Nginx
+      tags:
+      - nginx
 swagger: "2.0"

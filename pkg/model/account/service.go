@@ -4,6 +4,7 @@ import (
 	"account_storage/internal/app/store"
 	"account_storage/pkg/model"
 	"context"
+	"log"
 
 	"github.com/sirupsen/logrus"
 )
@@ -154,12 +155,17 @@ func (s *service) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-// @Summary Nginx
-// @Description request to Nginx
-// @Failure 400 {string} string "Bad Request"
-// @Failure 500 {string} string "Internal Server Error"
-// @Router /accounts/nginx [get]
+// @Summary Get data from Nginx
+// @Description Makes an HTTP GET request to Nginx and returns the response body as a string.
+// @Tags nginx
+// @Accept json
+// @Produce json
+// @Success 200 {string} body "Response body from Nginx"
+// @Failure 400 {string} string "Bad request"
+// @Failure 500 {string} string "Internal server error"
+// @Router /nginx [get]
 func (s *service) Nginx(ctx context.Context) (string, error) {
+	log.Print("start Nginx func in service")
 	res, err := s.repository.Nginx(ctx)
 	if err != nil {
 		s.logger.WithFields(logrus.Fields{

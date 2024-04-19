@@ -225,6 +225,41 @@
                     }
                 }
             }
+        },
+        "/nginx": {
+            "get": {
+                "description": "Makes an HTTP GET request to Nginx and returns the response body as a string.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "nginx"
+                ],
+                "summary": "Get data from Nginx",
+                "responses": {
+                    "200": {
+                        "description": "Response body from Nginx",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

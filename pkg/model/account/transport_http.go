@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,11 +45,13 @@ func NewGinService(
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	router.GET("/nginx", nginxHandler(logger))
+
 	router.POST("/accounts", gin.WrapF(func(w http.ResponseWriter, r *http.Request) {
 		kithttp.NewServer(
 			svcEndpoints.Create,
 			decodeCreateRequest(logger),
-			encodeResponse,
+			encodeResponse(logger),
 			options...,
 		).ServeHTTP(w, r)
 	}))
@@ -57,7 +60,7 @@ func NewGinService(
 		kithttp.NewServer(
 			svcEndpoints.GetAll,
 			decodeGetAllRequest,
-			encodeResponse,
+			encodeResponse(logger),
 			options...,
 		).ServeHTTP(w, r)
 	}))
@@ -66,7 +69,7 @@ func NewGinService(
 		kithttp.NewServer(
 			svcEndpoints.GetByID,
 			decodeGetByIDRequest,
-			encodeResponse,
+			encodeResponse(logger),
 			options...,
 		).ServeHTTP(w, r)
 	}))
@@ -75,7 +78,7 @@ func NewGinService(
 		kithttp.NewServer(
 			svcEndpoints.Update,
 			decodeUpdateRequest(logger),
-			encodeResponse,
+			encodeResponse(logger),
 			options...,
 		).ServeHTTP(w, r)
 	}))
@@ -84,12 +87,33 @@ func NewGinService(
 		kithttp.NewServer(
 			svcEndpoints.Delete,
 			decodeDeleteRequest,
-			encodeResponse,
+			encodeResponse(logger),
 			options...,
 		).ServeHTTP(w, r)
 	}))
 
 	return router
+}
+
+func nginxHandler(logger *logrus.Logger) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		resp, err := http.Get("http://accounts-storage-nginx")
+		if err != nil {
+			logger.Errorf("Failed to get response from nginx: %v", err)
+			c.String(http.StatusInternalServerError, "Error contacting Nginx server")
+			return
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			logger.Errorf("Failed to read response from nginx: %v", err)
+			c.String(http.StatusInternalServerError, "Error reading response from Nginx server")
+			return
+		}
+
+		c.String(resp.StatusCode, string(body))
+	}
 }
 
 func decodeCreateRequest(logger *logrus.Logger) kithttp.DecodeRequestFunc {
@@ -196,14 +220,29 @@ func decodeDeleteRequest(_ context.Context, r *http.Request) (interface{}, error
 	return req, nil
 }
 
-func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-	if e, ok := response.(errorer); ok && e.error() != nil {
+func encodeResponse(logger *logrus.Logger) kithttp.EncodeResponseFunc {
+	return func(ctx context.Context, w http.ResponseWriter, response interface{}) error {
+		logger.WithFields(logrus.Fields{
+			"package":  "account",
+			"function": "encodeResponse",
+		}).Debug("start encodeResponse function")
 
-		encodeErrorResponse(ctx, e.error(), w)
+		if e, ok := response.(errorer); ok && e.error() != nil {
+			logger.Errorf("Handling error: %v", e.error())
+			encodeErrorResponse(ctx, e.error(), w)
+			return nil
+		}
+
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			logger.Errorf("Error encoding JSON response: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return err
+		}
+		logger.Debug("Successfully encoded response to JSON")
 		return nil
 	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	return json.NewEncoder(w).Encode(response)
+
 }
 
 type errorer interface {
