@@ -97,7 +97,7 @@ func NewGinService(
 
 func nginxHandler(logger *logrus.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		resp, err := http.Get("http://accounts-storage-nginx")
+		resp, err := http.Get("http://nginx")
 		if err != nil {
 			logger.Errorf("Failed to get response from nginx: %v", err)
 			c.String(http.StatusInternalServerError, "Error contacting Nginx server")

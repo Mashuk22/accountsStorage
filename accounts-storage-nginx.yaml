@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts-storage-nginx-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: accounts-storage-nginx-server
+  template:
+    metadata:
+      labels:
+        app: accounts-storage-nginx-server
+    spec:
+      containers:
+      - name: accounts-storage-nginx-server
+        image: mashukivan/accounts-storage-nginx-server
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounts-storage-nginx-server
+spec:
+  type: LoadBalancer
+  selector:
+    app: accounts-storage-nginx-server
+  ports:
+  - port: 8080
+    targetPort: 8080
+

@@ -29,13 +29,6 @@ services:
     networks:
       - accounts-storage-network
 
-  accounts-storage-nginx:
-    image: nginx
-    ports:
-      - "80:80"
-    networks:
-      - accounts-storage-network
-
 networks:
   accounts-storage-network:
     driver: bridge
