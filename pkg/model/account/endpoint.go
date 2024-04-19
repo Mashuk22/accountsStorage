@@ -13,6 +13,7 @@ type Endpoints struct {
 	Update  endpoint.Endpoint
 	Delete  endpoint.Endpoint
 	GetAll  endpoint.Endpoint
+	Nginx   endpoint.Endpoint
 }
 
 func MakeEndpoints(s Service) Endpoints {
@@ -22,6 +23,7 @@ func MakeEndpoints(s Service) Endpoints {
 		Update:  makeUpdateEndpoint(s),
 		Delete:  makeDeleteEndpoint(s),
 		GetAll:  makeGetAllEndpoint(s),
+		Nginx:   makeNginxEndpoint(s),
 	}
 }
 
@@ -60,6 +62,13 @@ func makeDeleteEndpoint(s Service) endpoint.Endpoint {
 		req := request.(DeleteRequest)
 		err := s.Delete(ctx, req.ID)
 		return DeleteResponse{Err: err}, nil
+	}
+}
+
+func makeNginxEndpoint(s Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		res, err := s.Nginx(ctx)
+		return res, err
 	}
 }
 

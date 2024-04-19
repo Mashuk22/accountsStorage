@@ -4,6 +4,8 @@ import (
 	"account_storage/pkg/model"
 	"context"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"sync"
 	"time"
 
@@ -157,4 +159,36 @@ func (accountRepository *AccountRepository) GetAll(ctx context.Context) ([]model
 	}
 
 	return accounts, nil
+}
+
+func (accountRepository *AccountRepository) Nginx(ctx context.Context) (string, error) {
+	// Создаем HTTP клиент с таймаутом
+	client := &http.Client{
+		Timeout: 10 * time.Second, // Таймаут можно настроить по необходимости
+	}
+
+	// Выполнение HTTP GET запроса
+	req, err := http.NewRequestWithContext(ctx, "GET", "http://nginx", nil)
+	if err != nil {
+		return "", err // Возвращаем ошибку, если создание запроса не удалось
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err // Возвращаем ошибку, если запрос не выполнен
+	}
+	defer resp.Body.Close() // Убедитесь, что закрываете тело ответа
+
+	// Проверка статуса ответа
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to get a successful response: status code %d", resp.StatusCode)
+	}
+
+	// Чтение тела ответа
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err // Возвращаем ошибку, если чтение тела ответа не удалось
+	}
+
+	return string(body), nil // Возвращаем тело ответа как строку
 }

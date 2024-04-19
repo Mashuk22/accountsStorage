@@ -14,6 +14,7 @@ type Service interface {
 	Update(ctx context.Context, account model.Account) error
 	Delete(ctx context.Context, id string) error
 	GetAll(ctx context.Context) ([]model.Account, error)
+	Nginx(ctx context.Context) (string, error)
 }
 
 type service struct {
@@ -151,4 +152,24 @@ func (s *service) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	return nil
+}
+
+// @Summary Nginx
+// @Description request to Nginx
+// @Failure 400 {string} string "Bad Request"
+// @Failure 500 {string} string "Internal Server Error"
+// @Router /accounts/nginx [get]
+func (s *service) Nginx(ctx context.Context) (string, error) {
+	res, err := s.repository.Nginx(ctx)
+	if err != nil {
+		s.logger.WithFields(logrus.Fields{
+			"package":  "account",
+			"function": "Nginx",
+			"error":    err,
+		}).Error("Nginx request failed")
+
+		return "", err
+	}
+
+	return res, nil
 }

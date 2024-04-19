@@ -11,4 +11,5 @@ type AccountRepository interface {
 	Update(ctx context.Context, account model.Account) error
 	Delete(ctx context.Context, id string) error
 	GetAll(ctx context.Context) ([]model.Account, error)
+	Nginx(ctx context.Context) (string, error)
 }
